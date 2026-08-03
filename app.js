@@ -6,6 +6,26 @@
 
 
 /* =========================
+   EMERGENCY LOADER RELEASE
+========================= */
+
+setTimeout(() => {
+
+    const loader = document.getElementById("loader");
+
+    if (loader) {
+
+        loader.style.display = "none";
+
+    }
+
+}, 4000);
+
+
+
+
+
+/* =========================
    PAGE LOADER
 ========================= */
 
@@ -13,24 +33,20 @@ window.addEventListener("load", () => {
 
     const loader = document.getElementById("loader");
 
-    if(loader){
+    if (loader) {
 
-        setTimeout(()=>{
+        loader.style.opacity = "0";
 
-            loader.style.opacity="0";
+        setTimeout(() => {
 
-            setTimeout(()=>{
+            loader.style.display = "none";
 
-                loader.style.display="none";
-
-            },500);
-
-
-        },800);
+        }, 600);
 
     }
 
 });
+
 
 
 
@@ -48,18 +64,13 @@ const nav = document.querySelector(".nav-links");
 
 if(menuBtn && nav){
 
+    menuBtn.addEventListener("click",()=>{
 
-menuBtn.addEventListener("click",()=>{
+        nav.classList.toggle("active");
 
-
-    nav.classList.toggle("active");
-
-
-});
-
+    });
 
 }
-
 
 
 
@@ -73,22 +84,17 @@ menuBtn.addEventListener("click",()=>{
 document.querySelectorAll(".nav-links a")
 .forEach(link=>{
 
+    link.addEventListener("click",()=>{
 
-link.addEventListener("click",()=>{
+        if(nav){
 
+            nav.classList.remove("active");
 
-    if(nav){
+        }
 
-        nav.classList.remove("active");
-
-    }
-
-
-});
-
+    });
 
 });
-
 
 
 
@@ -112,29 +118,23 @@ this.getAttribute("href")
 );
 
 
-
 if(target){
 
+    e.preventDefault();
 
-e.preventDefault();
+    target.scrollIntoView({
 
+        behavior:"smooth"
 
-target.scrollIntoView({
-
-behavior:"smooth"
-
-});
-
+    });
 
 }
 
 
-
 });
 
 
 });
-
 
 
 
@@ -149,33 +149,30 @@ behavior:"smooth"
 const topBtn=document.getElementById("topBtn");
 
 
-window.addEventListener("scroll",()=>{
-
-
 if(topBtn){
+
+
+topBtn.style.display="none";
+
+
+window.addEventListener("scroll",()=>{
 
 
 if(window.scrollY>400){
 
-topBtn.style.display="block";
+    topBtn.style.display="block";
 
 }
 
 else{
 
-topBtn.style.display="none";
-
-}
-
+    topBtn.style.display="none";
 
 }
 
 
 });
 
-
-
-if(topBtn){
 
 
 topBtn.addEventListener("click",()=>{
@@ -206,6 +203,9 @@ behavior:"smooth"
 ========================= */
 
 
+if("IntersectionObserver" in window){
+
+
 const observer=new IntersectionObserver((entries)=>{
 
 
@@ -214,19 +214,15 @@ entries.forEach(entry=>{
 
 if(entry.isIntersecting){
 
-
-entry.target.classList.add("show");
-
+    entry.target.classList.add("show");
 
 }
-
 
 
 });
 
 
-},
-{
+},{
 
 threshold:0.15
 
@@ -239,13 +235,14 @@ document.querySelectorAll(
 ".card, .about-card, .document-card, .planning-card, .timeline-item"
 
 )
-.forEach(el=>{
+.forEach(element=>{
 
-
-observer.observe(el);
-
+observer.observe(element);
 
 });
+
+
+}
 
 
 
@@ -260,85 +257,27 @@ observer.observe(el);
 
 
 const checklist=document.querySelectorAll(
+
 ".checklist input[type='checkbox']"
-);
-
-
-
-if(checklist.length){
-
-
-
-checklist.forEach((item,index)=>{
-
-
-const saved=
-localStorage.getItem(
-"audit_check_"+index
-);
-
-
-
-if(saved==="true"){
-
-item.checked=true;
-
-}
-
-
-
-
-
-item.addEventListener("change",()=>{
-
-
-localStorage.setItem(
-
-"audit_check_"+index,
-
-item.checked
 
 );
 
-
-updateProgress();
-
-
-});
-
-
-});
-
-
-
-}
-
-
-
-
-
-
-
-/* =========================
-   TRAINING PROGRESS
-========================= */
 
 
 function updateProgress(){
 
 
-const total=
+const total=document.querySelectorAll(
 
-document.querySelectorAll(
 ".checklist input"
+
 ).length;
 
 
+const completed=document.querySelectorAll(
 
-const completed=
-
-document.querySelectorAll(
 ".checklist input:checked"
+
 ).length;
 
 
@@ -355,45 +294,108 @@ const percentage=Math.round(
 
 
 const progress=document.querySelector(
+
 ".progress-fill"
+
 );
 
 
 
 if(progress){
 
-
-progress.style.width=
+progress.style.width =
 percentage+"%";
-
 
 }
 
 
 
 const text=document.querySelector(
+
 ".progress-container p"
+
 );
 
 
 
 if(text){
 
-
-text.innerHTML=
-
+text.textContent =
 "Progression Audit Readiness : "
++ percentage
++"%";
 
-+ percentage +
+}
 
-"%";
+
+}
 
 
 }
 
 
 
+
+
+if(checklist.length){
+
+
+checklist.forEach((item,index)=>{
+
+
+let saved;
+
+
+try{
+
+saved=localStorage.getItem(
+
+"audit_check_"+index
+
+);
+
 }
+
+catch(e){}
+
+
+
+if(saved==="true"){
+
+item.checked=true;
+
+}
+
+
+
+item.addEventListener("change",()=>{
+
+
+try{
+
+
+localStorage.setItem(
+
+"audit_check_"+index,
+
+item.checked
+
+);
+
+
+}
+
+catch(e){}
+
+
+
+updateProgress();
+
+
+});
+
+
+});
 
 
 }
@@ -408,13 +410,13 @@ updateProgress();
 
 
 
-
 /* =========================
    QMS TRAINING MODULE
 ========================= */
 
 
-const qmsModules=[
+let qmsModules=[
+
 
 {
 
@@ -424,6 +426,7 @@ completed:false
 
 },
 
+
 {
 
 name:"Gestion documentaire",
@@ -431,6 +434,7 @@ name:"Gestion documentaire",
 completed:false
 
 },
+
 
 {
 
@@ -440,6 +444,7 @@ completed:false
 
 },
 
+
 {
 
 name:"Amélioration continue",
@@ -447,6 +452,7 @@ name:"Amélioration continue",
 completed:false
 
 }
+
 
 ];
 
@@ -473,13 +479,10 @@ JSON.stringify(qmsModules)
 
 
 
-
 function loadTrainingProgress(){
 
 
-
-const saved=
-
+const saved =
 localStorage.getItem(
 "QMS_training"
 );
@@ -489,17 +492,8 @@ localStorage.getItem(
 if(saved){
 
 
-const data=JSON.parse(saved);
-
-
-data.forEach((module,index)=>{
-
-
-qmsModules[index].completed=
-module.completed;
-
-
-});
+qmsModules =
+JSON.parse(saved);
 
 
 }
@@ -515,11 +509,6 @@ loadTrainingProgress();
 
 
 
-
-/* =========================
-   TRAINING COMPLETE BUTTON
-   FUTURE QMS MODULE READY
-========================= */
 
 
 function completeModule(id){
@@ -544,11 +533,7 @@ alert(
 }
 
 
-
 }
-
-
-
 
 
 
@@ -559,21 +544,21 @@ alert(
 ========================= */
 
 
-const contactForm=
-document.querySelector(".contact-form");
+const contactForm=document.querySelector(
+
+".contact-form"
+
+);
 
 
 
 if(contactForm){
 
 
-contactForm.addEventListener(
-"submit",
-(e)=>{
+contactForm.addEventListener("submit",(e)=>{
 
 
 e.preventDefault();
-
 
 
 alert(
@@ -583,17 +568,13 @@ alert(
 );
 
 
-
 contactForm.reset();
-
 
 
 });
 
 
 }
-
-
 
 
 
@@ -601,61 +582,12 @@ contactForm.reset();
 
 
 /* =========================
-   INITIALIZATION
+   READY MESSAGE
 ========================= */
 
 
-document.addEventListener(
-"DOMContentLoaded",
-()=>{
+console.log(
 
+"TISSIR 2025 QMS Training Platform loaded successfully"
 
-updateProgress();
-
-
-});
-/* APP.JS SUPPORT */
-
-.nav-links.active {
-
-display:flex;
-
-flex-direction:column;
-
-position:absolute;
-
-top:90px;
-
-left:0;
-
-right:0;
-
-background:white;
-
-padding:25px;
-
-}
-
-
-.card,
-.about-card,
-.document-card,
-.planning-card,
-.timeline-item {
-
-opacity:0;
-
-transform:translateY(30px);
-
-transition:.6s;
-
-}
-
-
-.show {
-
-opacity:1;
-
-transform:translateY(0);
-
-}
+);
