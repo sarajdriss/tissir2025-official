@@ -1,361 +1,565 @@
-/*==========================================================
- TISSIR 2025
- app.js
-==========================================================*/
+ /* =========================================================
+    TISSIR 2025
+    QMS TRAINING MODE - APP.JS
+    Audit Readiness Learning Portal
+    ========================================================= */
+
+
+/* ===============================
+   GLOBAL INITIALIZATION
+================================ */
 
 document.addEventListener("DOMContentLoaded", () => {
 
-    /*======================================================
-      LOADER
-    ======================================================*/
+    initializeCounters();
 
-    const loader = document.getElementById("loader");
+    initializeScrollAnimation();
 
-    if (loader) {
-        window.addEventListener("load", () => {
-            setTimeout(() => {
-                loader.style.opacity = "0";
-                loader.style.visibility = "hidden";
-            }, 600);
-        });
-    }
+    initializeChecklist();
 
-    /*======================================================
-      SMOOTH SCROLL
-    ======================================================*/
+    initializeTrainingMode();
 
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    initializeFAQ();
 
-        anchor.addEventListener("click", function (e) {
-
-            const target = document.querySelector(this.getAttribute("href"));
-
-            if (!target) return;
-
-            e.preventDefault();
-
-            target.scrollIntoView({
-
-                behavior: "smooth",
-
-                block: "start"
-
-            });
-
-        });
-
-    });
-
-
-    /*======================================================
-      STICKY HEADER
-    ======================================================*/
-
-    const header = document.querySelector("header");
-
-    window.addEventListener("scroll", () => {
-
-        if (!header) return;
-
-        if (window.scrollY > 80) {
-
-            header.style.background = "rgba(255,255,255,.98)";
-            header.style.boxShadow = "0 10px 30px rgba(0,0,0,.08)";
-
-        } else {
-
-            header.style.background = "rgba(255,255,255,.92)";
-            header.style.boxShadow = "none";
-
-        }
-
-    });
-
-
-    /*======================================================
-      BACK TO TOP
-    ======================================================*/
-
-    const topBtn = document.getElementById("topBtn");
-
-    if (topBtn) {
-
-        window.addEventListener("scroll", () => {
-
-            if (window.scrollY > 500) {
-
-                topBtn.style.display = "flex";
-
-            } else {
-
-                topBtn.style.display = "none";
-
-            }
-
-        });
-
-        topBtn.addEventListener("click", () => {
-
-            window.scrollTo({
-
-                top: 0,
-
-                behavior: "smooth"
-
-            });
-
-        });
-
-    }
-
-
-    /*======================================================
-      COUNTERS
-    ======================================================*/
-
-    const counters = document.querySelectorAll(".counter");
-
-    const counterObserver = new IntersectionObserver(entries => {
-
-        entries.forEach(entry => {
-
-            if (!entry.isIntersecting) return;
-
-            const counter = entry.target;
-
-            const target = Number(counter.dataset.target);
-
-            let current = 0;
-
-            const speed = target / 120;
-
-            const update = () => {
-
-                current += speed;
-
-                if (current < target) {
-
-                    counter.textContent = Math.floor(current);
-
-                    requestAnimationFrame(update);
-
-                } else {
-
-                    counter.textContent = target;
-
-                }
-
-            };
-
-            update();
-
-            counterObserver.unobserve(counter);
-
-        });
-
-    }, {
-
-        threshold: 0.5
-
-    });
-
-    counters.forEach(counter => counterObserver.observe(counter));
-
-
-    /*======================================================
-      SCROLL REVEAL
-    ======================================================*/
-
-    const revealElements = document.querySelectorAll(
-
-        ".card, .quality-box, .stat, .step, .about-image, .about-text"
-
-    );
-
-    revealElements.forEach(el => {
-
-        el.style.opacity = "0";
-
-        el.style.transform = "translateY(40px)";
-
-        el.style.transition = ".7s ease";
-
-    });
-
-    const revealObserver = new IntersectionObserver(entries => {
-
-        entries.forEach(entry => {
-
-            if (entry.isIntersecting) {
-
-                entry.target.style.opacity = "1";
-
-                entry.target.style.transform = "translateY(0)";
-
-            }
-
-        });
-
-    }, {
-
-        threshold: .15
-
-    });
-
-    revealElements.forEach(el => revealObserver.observe(el));
-
-
-    /*======================================================
-      ACTIVE MENU
-    ======================================================*/
-
-    const sections = document.querySelectorAll("section");
-
-    const navLinks = document.querySelectorAll(".navbar ul li a");
-
-    window.addEventListener("scroll", () => {
-
-        let current = "";
-
-        sections.forEach(section => {
-
-            const top = section.offsetTop - 120;
-
-            const height = section.offsetHeight;
-
-            if (pageYOffset >= top) {
-
-                current = section.getAttribute("id");
-
-            }
-
-        });
-
-        navLinks.forEach(link => {
-
-            link.classList.remove("active");
-
-            if (link.getAttribute("href") === "#" + current) {
-
-                link.classList.add("active");
-
-            }
-
-        });
-
-    });
-
-
-    /*======================================================
-      CONTACT FORM
-    ======================================================*/
-
-    const form = document.querySelector("form");
-
-    if (form) {
-
-        form.addEventListener("submit", function (e) {
-
-            e.preventDefault();
-
-            const inputs = form.querySelectorAll("input, textarea");
-
-            let valid = true;
-
-            inputs.forEach(input => {
-
-                if (input.value.trim() === "") {
-
-                    input.style.border = "2px solid #d9534f";
-
-                    valid = false;
-
-                } else {
-
-                    input.style.border = "1px solid #ddd";
-
-                }
-
-            });
-
-            if (!valid) {
-
-                alert("Veuillez remplir tous les champs.");
-
-                return;
-
-            }
-
-            alert("Merci ! Votre message a été envoyé.");
-
-            form.reset();
-
-        });
-
-    }
-
-
-    /*======================================================
-      PARALLAX HERO
-    ======================================================*/
-
-    const hero = document.querySelector(".hero");
-
-    if (hero) {
-
-        window.addEventListener("scroll", () => {
-
-            hero.style.backgroundPositionY =
-
-                window.pageYOffset * 0.45 + "px";
-
-        });
-
-    }
-
-
-    /*======================================================
-      SIMPLE TYPING EFFECT
-    ======================================================*/
-
-    const heroTitle = document.querySelector(".hero h1");
-
-    if (heroTitle) {
-
-        const text = heroTitle.innerHTML.replace(/<br>/g, "\n");
-
-        heroTitle.innerHTML = "";
-
-        let i = 0;
-
-        function typing() {
-
-            if (i < text.length) {
-
-                if (text.charAt(i) === "\n") {
-
-                    heroTitle.innerHTML += "<br>";
-
-                } else {
-
-                    heroTitle.innerHTML += text.charAt(i);
-
-                }
-
-                i++;
-
-                setTimeout(typing, 35);
-
-            }
-
-        }
-
-        typing();
-
-    }
+    initializeTopButton();
 
 });
 
-/*==========================================================
- END
-==========================================================*/
+
+/* ===============================
+   KPI COUNTERS
+================================ */
+
+
+function initializeCounters(){
+
+    const counters = document.querySelectorAll(".counter");
+
+
+    counters.forEach(counter=>{
+
+        const target = Number(counter.dataset.target);
+
+        let count = 0;
+
+        const speed = target / 80;
+
+
+        const update = ()=>{
+
+            if(count < target){
+
+                count += speed;
+
+                counter.textContent =
+                Math.ceil(count);
+
+                requestAnimationFrame(update);
+
+            }
+
+            else{
+
+                counter.textContent = target;
+
+            }
+
+        };
+
+
+        update();
+
+    });
+
+}
+
+
+
+/* ===============================
+   SCROLL ANIMATION
+================================ */
+
+
+function initializeScrollAnimation(){
+
+
+    const elements =
+    document.querySelectorAll(
+        ".card, .feature-box, .document-card, .timeline-item"
+    );
+
+
+    const observer =
+    new IntersectionObserver(entries=>{
+
+
+        entries.forEach(entry=>{
+
+
+            if(entry.isIntersecting){
+
+                entry.target.style.opacity="1";
+
+                entry.target.style.transform="translateY(0)";
+
+            }
+
+
+        });
+
+
+    },
+    {
+        threshold:0.15
+    });
+
+
+
+    elements.forEach(el=>{
+
+
+        el.style.opacity="0";
+
+        el.style.transform="translateY(40px)";
+
+        el.style.transition="all .6s ease";
+
+
+        observer.observe(el);
+
+
+    });
+
+
+}
+
+
+
+
+/* ===============================
+   QMS TRAINING MODE
+================================ */
+
+
+function initializeTrainingMode(){
+
+
+    const modules = document.querySelectorAll(".training-module");
+
+
+    if(!modules.length){
+
+        return;
+
+    }
+
+
+    modules.forEach(module=>{
+
+
+        const button =
+        module.querySelector(".complete-btn");
+
+
+        if(button){
+
+
+            button.addEventListener("click",()=>{
+
+
+                module.classList.add("completed");
+
+
+                button.innerHTML =
+                "✓ Formation terminée";
+
+
+                updateTrainingProgress();
+
+
+            });
+
+
+        }
+
+
+    });
+
+
+
+}
+
+
+
+function updateTrainingProgress(){
+
+
+    const total =
+    document.querySelectorAll(".training-module").length;
+
+
+    const completed =
+    document.querySelectorAll(".training-module.completed").length;
+
+
+
+    const progress =
+    Math.round(
+        (completed / total) * 100
+    );
+
+
+    const bar =
+    document.querySelector(".training-progress");
+
+
+    if(bar){
+
+        bar.style.width =
+        progress + "%";
+
+    }
+
+
+    const text =
+    document.querySelector(".progress-text");
+
+
+    if(text){
+
+        text.innerHTML =
+        "Progression formation QMS : "
+        + progress
+        + "%";
+
+    }
+
+
+}
+
+
+
+
+/* ===============================
+   AUDIT READINESS CHECKLIST
+================================ */
+
+
+function initializeChecklist(){
+
+
+    const checks =
+    document.querySelectorAll(
+        ".checklist input"
+    );
+
+
+    checks.forEach((check,index)=>{
+
+
+        const saved =
+        localStorage.getItem(
+            "qms_check_" + index
+        );
+
+
+        if(saved==="true"){
+
+            check.checked=true;
+
+        }
+
+
+
+        check.addEventListener(
+            "change",
+            ()=>{
+
+
+                localStorage.setItem(
+                    "qms_check_"+index,
+                    check.checked
+                );
+
+
+                calculateReadiness();
+
+
+            }
+        );
+
+
+    });
+
+
+    calculateReadiness();
+
+
+}
+
+
+
+
+function calculateReadiness(){
+
+
+    const checks =
+    document.querySelectorAll(
+        ".checklist input"
+    );
+
+
+    if(!checks.length){
+
+        return;
+
+    }
+
+
+
+    let completed=0;
+
+
+    checks.forEach(check=>{
+
+
+        if(check.checked){
+
+            completed++;
+
+        }
+
+
+    });
+
+
+
+    const score =
+    Math.round(
+        (completed/checks.length)*100
+    );
+
+
+
+    const result =
+    document.querySelector(
+        ".audit-score"
+    );
+
+
+    if(result){
+
+        result.innerHTML =
+        score+"%";
+
+    }
+
+
+
+}
+
+
+
+/* ===============================
+   FAQ
+================================ */
+
+
+function initializeFAQ(){
+
+
+    const faq =
+    document.querySelectorAll(
+        ".faq-item h3"
+    );
+
+
+    faq.forEach(question=>{
+
+
+        question.style.cursor="pointer";
+
+
+        question.addEventListener(
+            "click",
+            ()=>{
+
+
+                const answer =
+                question.nextElementSibling;
+
+
+                if(answer.style.display==="block"){
+
+                    answer.style.display="none";
+
+                }
+
+                else{
+
+                    answer.style.display="block";
+
+                }
+
+
+            }
+        );
+
+
+    });
+
+
+}
+
+
+
+
+/* ===============================
+   BACK TO TOP
+================================ */
+
+
+function initializeTopButton(){
+
+
+    const btn =
+    document.getElementById(
+        "topBtn"
+    );
+
+
+    if(!btn){
+
+        return;
+
+    }
+
+
+
+    window.addEventListener(
+        "scroll",
+        ()=>{
+
+
+            if(window.scrollY>400){
+
+                btn.style.display="block";
+
+            }
+
+            else{
+
+                btn.style.display="none";
+
+            }
+
+
+        }
+    );
+
+
+
+    btn.addEventListener(
+        "click",
+        ()=>{
+
+
+            window.scrollTo({
+
+                top:0,
+
+                behavior:"smooth"
+
+            });
+
+
+        }
+    );
+
+
+}
+
+
+
+/* ===============================
+   QMS TRAINING DATA MODEL
+================================ */
+
+
+const QMS_Modules = [
+
+
+{
+
+title:
+"Introduction au Système Management Qualité",
+
+objective:
+"Comprendre les principes fondamentaux du QMS."
+
+},
+
+
+{
+
+title:
+"Gestion documentaire",
+
+objective:
+"Maîtriser procédures, instructions et enregistrements."
+
+},
+
+
+{
+
+title:
+"Contrôle qualité production",
+
+objective:
+"Assurer la conformité des produits."
+
+},
+
+
+{
+
+title:
+"Traçabilité matières",
+
+objective:
+"Garantir l'identification et le suivi des composants."
+
+},
+
+
+{
+
+title:
+"Audit interne",
+
+objective:
+"Préparer les équipes aux exigences auditeurs."
+
+},
+
+
+{
+
+title:
+"Actions correctives CAPA",
+
+objective:
+"Analyser les causes et améliorer les performances."
+
+}
+
+
+];
+
+
+
+console.log(
+"TISSIR QMS Training Loaded",
+QMS_Modules
+);
