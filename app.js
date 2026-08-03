@@ -614,3 +614,48 @@ updateProgress();
 
 
 });
+/* APP.JS SUPPORT */
+
+.nav-links.active {
+
+display:flex;
+
+flex-direction:column;
+
+position:absolute;
+
+top:90px;
+
+left:0;
+
+right:0;
+
+background:white;
+
+padding:25px;
+
+}
+
+
+.card,
+.about-card,
+.document-card,
+.planning-card,
+.timeline-item {
+
+opacity:0;
+
+transform:translateY(30px);
+
+transition:.6s;
+
+}
+
+
+.show {
+
+opacity:1;
+
+transform:translateY(0);
+
+}
