@@ -1,134 +1,61 @@
- /* =========================================================
-    TISSIR 2025
-    QMS TRAINING MODE - APP.JS
-    Audit Readiness Learning Portal
-    ========================================================= */
+/* =========================================================
+   TISSIR 2025
+   Audit Readiness & QMS Training Platform
+   JavaScript
+========================================================= */
 
 
-/* ===============================
-   GLOBAL INITIALIZATION
-================================ */
+/* =========================
+   PAGE LOADER
+========================= */
 
-document.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("load", () => {
 
-    initializeCounters();
+    const loader = document.getElementById("loader");
 
-    initializeScrollAnimation();
+    if(loader){
 
-    initializeChecklist();
+        setTimeout(()=>{
 
-    initializeTrainingMode();
+            loader.style.opacity="0";
 
-    initializeFAQ();
+            setTimeout(()=>{
 
-    initializeTopButton();
+                loader.style.display="none";
+
+            },500);
+
+
+        },800);
+
+    }
 
 });
 
 
-/* ===============================
-   KPI COUNTERS
-================================ */
-
-
-function initializeCounters(){
-
-    const counters = document.querySelectorAll(".counter");
-
-
-    counters.forEach(counter=>{
-
-        const target = Number(counter.dataset.target);
-
-        let count = 0;
-
-        const speed = target / 80;
-
-
-        const update = ()=>{
-
-            if(count < target){
-
-                count += speed;
-
-                counter.textContent =
-                Math.ceil(count);
-
-                requestAnimationFrame(update);
-
-            }
-
-            else{
-
-                counter.textContent = target;
-
-            }
-
-        };
-
-
-        update();
-
-    });
-
-}
 
 
 
-/* ===============================
-   SCROLL ANIMATION
-================================ */
+/* =========================
+   MOBILE MENU
+========================= */
 
 
-function initializeScrollAnimation(){
+const menuBtn = document.getElementById("menuBtn");
+
+const nav = document.querySelector(".nav-links");
 
 
-    const elements =
-    document.querySelectorAll(
-        ".card, .feature-box, .document-card, .timeline-item"
-    );
+if(menuBtn && nav){
 
 
-    const observer =
-    new IntersectionObserver(entries=>{
+menuBtn.addEventListener("click",()=>{
 
 
-        entries.forEach(entry=>{
+    nav.classList.toggle("active");
 
 
-            if(entry.isIntersecting){
-
-                entry.target.style.opacity="1";
-
-                entry.target.style.transform="translateY(0)";
-
-            }
-
-
-        });
-
-
-    },
-    {
-        threshold:0.15
-    });
-
-
-
-    elements.forEach(el=>{
-
-
-        el.style.opacity="0";
-
-        el.style.transform="translateY(40px)";
-
-        el.style.transition="all .6s ease";
-
-
-        observer.observe(el);
-
-
-    });
+});
 
 
 }
@@ -136,430 +63,554 @@ function initializeScrollAnimation(){
 
 
 
-/* ===============================
-   QMS TRAINING MODE
-================================ */
 
 
-function initializeTrainingMode(){
+/* =========================
+   CLOSE MOBILE MENU
+========================= */
 
 
-    const modules = document.querySelectorAll(".training-module");
+document.querySelectorAll(".nav-links a")
+.forEach(link=>{
 
 
-    if(!modules.length){
+link.addEventListener("click",()=>{
 
-        return;
+
+    if(nav){
+
+        nav.classList.remove("active");
 
     }
 
 
-    modules.forEach(module=>{
+});
 
 
-        const button =
-        module.querySelector(".complete-btn");
-
-
-        if(button){
-
-
-            button.addEventListener("click",()=>{
-
-
-                module.classList.add("completed");
-
-
-                button.innerHTML =
-                "✓ Formation terminée";
-
-
-                updateTrainingProgress();
-
-
-            });
-
-
-        }
-
-
-    });
+});
 
 
 
-}
 
 
 
-function updateTrainingProgress(){
+
+/* =========================
+   SMOOTH SCROLL
+========================= */
 
 
-    const total =
-    document.querySelectorAll(".training-module").length;
+document.querySelectorAll('a[href^="#"]')
+.forEach(anchor=>{
 
 
-    const completed =
-    document.querySelectorAll(".training-module.completed").length;
+anchor.addEventListener("click",function(e){
+
+
+const target=document.querySelector(
+this.getAttribute("href")
+);
 
 
 
-    const progress =
-    Math.round(
-        (completed / total) * 100
-    );
+if(target){
 
 
-    const bar =
-    document.querySelector(".training-progress");
+e.preventDefault();
 
 
-    if(bar){
+target.scrollIntoView({
 
-        bar.style.width =
-        progress + "%";
+behavior:"smooth"
 
-    }
-
-
-    const text =
-    document.querySelector(".progress-text");
-
-
-    if(text){
-
-        text.innerHTML =
-        "Progression formation QMS : "
-        + progress
-        + "%";
-
-    }
+});
 
 
 }
 
 
 
+});
 
-/* ===============================
-   AUDIT READINESS CHECKLIST
-================================ */
 
+});
 
-function initializeChecklist(){
 
 
-    const checks =
-    document.querySelectorAll(
-        ".checklist input"
-    );
 
 
-    checks.forEach((check,index)=>{
 
 
-        const saved =
-        localStorage.getItem(
-            "qms_check_" + index
-        );
-
-
-        if(saved==="true"){
-
-            check.checked=true;
-
-        }
-
-
-
-        check.addEventListener(
-            "change",
-            ()=>{
-
-
-                localStorage.setItem(
-                    "qms_check_"+index,
-                    check.checked
-                );
-
-
-                calculateReadiness();
-
-
-            }
-        );
-
-
-    });
-
-
-    calculateReadiness();
-
-
-}
-
-
-
-
-function calculateReadiness(){
-
-
-    const checks =
-    document.querySelectorAll(
-        ".checklist input"
-    );
-
-
-    if(!checks.length){
-
-        return;
-
-    }
-
-
-
-    let completed=0;
-
-
-    checks.forEach(check=>{
-
-
-        if(check.checked){
-
-            completed++;
-
-        }
-
-
-    });
-
-
-
-    const score =
-    Math.round(
-        (completed/checks.length)*100
-    );
-
-
-
-    const result =
-    document.querySelector(
-        ".audit-score"
-    );
-
-
-    if(result){
-
-        result.innerHTML =
-        score+"%";
-
-    }
-
-
-
-}
-
-
-
-/* ===============================
-   FAQ
-================================ */
-
-
-function initializeFAQ(){
-
-
-    const faq =
-    document.querySelectorAll(
-        ".faq-item h3"
-    );
-
-
-    faq.forEach(question=>{
-
-
-        question.style.cursor="pointer";
-
-
-        question.addEventListener(
-            "click",
-            ()=>{
-
-
-                const answer =
-                question.nextElementSibling;
-
-
-                if(answer.style.display==="block"){
-
-                    answer.style.display="none";
-
-                }
-
-                else{
-
-                    answer.style.display="block";
-
-                }
-
-
-            }
-        );
-
-
-    });
-
-
-}
-
-
-
-
-/* ===============================
+/* =========================
    BACK TO TOP
-================================ */
+========================= */
 
 
-function initializeTopButton(){
+const topBtn=document.getElementById("topBtn");
 
 
-    const btn =
-    document.getElementById(
-        "topBtn"
-    );
+window.addEventListener("scroll",()=>{
 
 
-    if(!btn){
-
-        return;
-
-    }
+if(topBtn){
 
 
+if(window.scrollY>400){
 
-    window.addEventListener(
-        "scroll",
-        ()=>{
+topBtn.style.display="block";
 
+}
 
-            if(window.scrollY>400){
+else{
 
-                btn.style.display="block";
+topBtn.style.display="none";
 
-            }
-
-            else{
-
-                btn.style.display="none";
-
-            }
+}
 
 
-        }
-    );
+}
+
+
+});
 
 
 
-    btn.addEventListener(
-        "click",
-        ()=>{
+if(topBtn){
 
 
-            window.scrollTo({
-
-                top:0,
-
-                behavior:"smooth"
-
-            });
+topBtn.addEventListener("click",()=>{
 
 
-        }
-    );
+window.scrollTo({
+
+top:0,
+
+behavior:"smooth"
+
+});
+
+
+});
 
 
 }
 
 
 
-/* ===============================
-   QMS TRAINING DATA MODEL
-================================ */
 
 
-const QMS_Modules = [
 
 
-{
-
-title:
-"Introduction au Système Management Qualité",
-
-objective:
-"Comprendre les principes fondamentaux du QMS."
-
-},
+/* =========================
+   SCROLL ANIMATION
+========================= */
 
 
-{
-
-title:
-"Gestion documentaire",
-
-objective:
-"Maîtriser procédures, instructions et enregistrements."
-
-},
+const observer=new IntersectionObserver((entries)=>{
 
 
-{
-
-title:
-"Contrôle qualité production",
-
-objective:
-"Assurer la conformité des produits."
-
-},
+entries.forEach(entry=>{
 
 
-{
-
-title:
-"Traçabilité matières",
-
-objective:
-"Garantir l'identification et le suivi des composants."
-
-},
+if(entry.isIntersecting){
 
 
-{
+entry.target.classList.add("show");
 
-title:
-"Audit interne",
-
-objective:
-"Préparer les équipes aux exigences auditeurs."
-
-},
-
-
-{
-
-title:
-"Actions correctives CAPA",
-
-objective:
-"Analyser les causes et améliorer les performances."
 
 }
 
+
+
+});
+
+
+},
+{
+
+threshold:0.15
+
+});
+
+
+
+document.querySelectorAll(
+
+".card, .about-card, .document-card, .planning-card, .timeline-item"
+
+)
+.forEach(el=>{
+
+
+observer.observe(el);
+
+
+});
+
+
+
+
+
+
+
+
+/* =========================
+   AUDIT CHECKLIST MEMORY
+========================= */
+
+
+const checklist=document.querySelectorAll(
+".checklist input[type='checkbox']"
+);
+
+
+
+if(checklist.length){
+
+
+
+checklist.forEach((item,index)=>{
+
+
+const saved=
+localStorage.getItem(
+"audit_check_"+index
+);
+
+
+
+if(saved==="true"){
+
+item.checked=true;
+
+}
+
+
+
+
+
+item.addEventListener("change",()=>{
+
+
+localStorage.setItem(
+
+"audit_check_"+index,
+
+item.checked
+
+);
+
+
+updateProgress();
+
+
+});
+
+
+});
+
+
+
+}
+
+
+
+
+
+
+
+/* =========================
+   TRAINING PROGRESS
+========================= */
+
+
+function updateProgress(){
+
+
+const total=
+
+document.querySelectorAll(
+".checklist input"
+).length;
+
+
+
+const completed=
+
+document.querySelectorAll(
+".checklist input:checked"
+).length;
+
+
+
+if(total){
+
+
+const percentage=Math.round(
+
+(completed/total)*100
+
+);
+
+
+
+const progress=document.querySelector(
+".progress-fill"
+);
+
+
+
+if(progress){
+
+
+progress.style.width=
+percentage+"%";
+
+
+}
+
+
+
+const text=document.querySelector(
+".progress-container p"
+);
+
+
+
+if(text){
+
+
+text.innerHTML=
+
+"Progression Audit Readiness : "
+
++ percentage +
+
+"%";
+
+
+}
+
+
+
+}
+
+
+}
+
+
+
+updateProgress();
+
+
+
+
+
+
+
+
+/* =========================
+   QMS TRAINING MODULE
+========================= */
+
+
+const qmsModules=[
+
+{
+
+name:"Fondamentaux QMS",
+
+completed:false
+
+},
+
+{
+
+name:"Gestion documentaire",
+
+completed:false
+
+},
+
+{
+
+name:"Audit interne",
+
+completed:false
+
+},
+
+{
+
+name:"Amélioration continue",
+
+completed:false
+
+}
 
 ];
 
 
 
-console.log(
-"TISSIR QMS Training Loaded",
-QMS_Modules
+
+
+function saveTrainingProgress(){
+
+
+localStorage.setItem(
+
+"QMS_training",
+
+JSON.stringify(qmsModules)
+
 );
+
+
+}
+
+
+
+
+
+
+
+function loadTrainingProgress(){
+
+
+
+const saved=
+
+localStorage.getItem(
+"QMS_training"
+);
+
+
+
+if(saved){
+
+
+const data=JSON.parse(saved);
+
+
+data.forEach((module,index)=>{
+
+
+qmsModules[index].completed=
+module.completed;
+
+
+});
+
+
+}
+
+
+}
+
+
+
+loadTrainingProgress();
+
+
+
+
+
+
+/* =========================
+   TRAINING COMPLETE BUTTON
+   FUTURE QMS MODULE READY
+========================= */
+
+
+function completeModule(id){
+
+
+if(qmsModules[id]){
+
+
+qmsModules[id].completed=true;
+
+
+saveTrainingProgress();
+
+
+alert(
+
+"Module QMS validé avec succès"
+
+);
+
+
+}
+
+
+
+}
+
+
+
+
+
+
+
+
+/* =========================
+   CONTACT FORM
+========================= */
+
+
+const contactForm=
+document.querySelector(".contact-form");
+
+
+
+if(contactForm){
+
+
+contactForm.addEventListener(
+"submit",
+(e)=>{
+
+
+e.preventDefault();
+
+
+
+alert(
+
+"Merci pour votre message. Notre équipe vous contactera prochainement."
+
+);
+
+
+
+contactForm.reset();
+
+
+
+});
+
+
+}
+
+
+
+
+
+
+
+
+/* =========================
+   INITIALIZATION
+========================= */
+
+
+document.addEventListener(
+"DOMContentLoaded",
+()=>{
+
+
+updateProgress();
+
+
+});
