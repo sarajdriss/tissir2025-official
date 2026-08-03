@@ -15,7 +15,7 @@ setTimeout(() => {
 
     if (loader) {
 
-        loader.style.display = "none";
+        loader.remove();
 
     }
 
@@ -30,6 +30,22 @@ setTimeout(() => {
 ========================= */
 
 window.addEventListener("load", () => {
+
+    const loader = document.getElementById("loader");
+
+    if (loader) {
+
+        loader.style.opacity = "0";
+
+        setTimeout(() => {
+
+            loader.remove();
+
+        }, 600);
+
+    }
+
+});
 
     const loader = document.getElementById("loader");
 
@@ -593,52 +609,12 @@ console.log(
 );
 
 /* =========================
-   APP.JS SUPPORT
+   READY MESSAGE
 ========================= */
 
 
-.nav-links.active {
+console.log(
 
-display:flex;
+"TISSIR 2025 QMS Training Platform loaded successfully"
 
-flex-direction:column;
-
-position:absolute;
-
-top:90px;
-
-left:0;
-
-right:0;
-
-background:white;
-
-padding:25px;
-
-}
-
-
-
-.card,
-.about-card,
-.document-card,
-.planning-card,
-.timeline-item {
-
-opacity:0;
-
-transform:translateY(30px);
-
-transition:.6s;
-
-}
-
-
-
-.show {
-
-opacity:1;
-
-transform:translateY(0);
-
-}
+);
